@@ -1,16 +1,12 @@
-FROM php:8.2-apache
+FROM debian:bullseye
 
-# Ajustes personalizados
-RUN { \
-    echo 'upload_max_filesize=10M'; \
-    echo 'post_max_size=12M'; \
-    echo 'display_errors=On'; \
-} >> /usr/local/etc/php/conf.d/custom.ini
+RUN apt-get update && apt-get install -y curl cron
 
-COPY public/ /var/www/html/
+COPY read-emails.sh /usr/local/bin/read-emails.sh
+COPY crontab.txt /etc/cron.d/mycron
 
-RUN chown -R www-data:www-data /var/www/html/uploads || true
+RUN chmod +x /usr/local/bin/read-emails.sh && chmod 0644 /etc/cron.d/mycron
+RUN crontab /etc/cron.d/mycron
+RUN touch /var/log/cron.log
 
-EXPOSE 80
-
-CMD ["apache2-foreground"]
+CMD ["cron", "-f"]

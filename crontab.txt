@@ -1,0 +1,1 @@
+* * * * * /usr/local/bin/read-emails.sh >> /var/log/cron.log 2>&1
